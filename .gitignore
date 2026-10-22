@@ -1,0 +1,27 @@
+
+# Virtuelle Python-miljoeer
+.venv/
+venv/
+env/
+
+# Python-cachefiler
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test og analyse-cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Lokale miljøvariabler og hemmeligheder
+.env
+.env.*
+
+# macOS
+.DS_Store
