@@ -52,3 +52,8 @@ python test.py
 ## Status
 
 Projektet er under udvikling. Flere projekter og analyser vil blive tilføjet løbende.
+
+Indlæst og undersøgt Titanic-datasættet med pandas.
+Beregnet deskriptiv statistik og undersøgt manglende værdier.
+Analyseret overlevelsesandele på tværs af passagerklasser.
+Oprettet og gemt den første visualisering.
