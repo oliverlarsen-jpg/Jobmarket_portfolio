@@ -1,0 +1,290 @@
+## Trin 02.1
+#%%
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def indlæs_data_og_overblik(filnavn):
+    df = pd.read_csv(filnavn)
+
+    print(f"Datasættet har {df.shape[0]} rækker og {df.shape[1]} kolonner.")
+    print("\nHer ses datatyper og antal ikke-manglende værdier:")
+    df.info()
+    print("\nHer ses et samlet overblik over de numeriske kolonner:")
+    print(df.describe())
+
+    return df
+
+
+def analyse_af_numerisk_data(df, col1, col2):
+    return df.groupby(col1)[col2].agg(
+        ["mean", "std", "median", "count"]
+    )
+
+
+def lav_soejle_graf_mean_og_gem_PNG(df, col1, col2):
+    plotted_data = df.groupby(col1)[col2].mean()
+
+    plotted_data.plot(kind="bar", rot=0)
+    plt.title(f"Gennemsnitlig {col2} fordelt på {col1}")
+    plt.xlabel(col1)
+    plt.ylabel(f"Gennemsnitlig {col2}")
+    plt.ylim(bottom=0)
+
+    plt.tight_layout()
+    plt.savefig("outputs/02_data_plot.png", dpi=300)
+    plt.show()
+    plt.close()
+
+
+def main():
+    # 1. Indlæs data og vis overblik
+    titanic = indlæs_data_og_overblik("titanic.csv")
+
+    # 2. Analysér numeriske data
+    resultat = analyse_af_numerisk_data(
+        titanic, "Pclass", "Survived"
+    )
+    print("\nResultat af den numeriske analyse:")
+    print(resultat)
+
+    # 3. Lav og gem søjlediagram
+    lav_soejle_graf_mean_og_gem_PNG(
+        titanic, "Pclass", "Survived"
+    )
+
+
+if __name__ == "__main__":
+    main()
+
+
+## Trin 02.2
+#%%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+#%%
+stock_prices = pd.read_csv(
+    "https://raw.githubusercontent.com/plotly/datasets/master/stockdata.csv"
+)
+
+#%%
+print(stock_prices.head())
+print(stock_prices.shape)
+print(stock_prices.info())
+
+# %%
+stock_prices_long = stock_prices.melt(
+    id_vars="Date",
+    var_name="Aktie",
+    value_name="Kurs"
+)
+
+print(stock_prices_long.head())
+# %%
+#Filtrering på data (efter 01/01-2010):
+stock_prices["Date"] = pd.to_datetime(stock_prices["Date"])
+
+stock_prices_2010 = stock_prices[
+    stock_prices["Date"] >= "2010-01-01"
+]
+
+print(stock_prices_2010.head())
+
+# %%
+#Filtrering på aktiekurser over 50 for Microsoft ("MSFT")
+high_msft = stock_prices[
+    stock_prices["MSFT"] > 50
+]
+
+print(high_msft.head())
+# %%
+#Filtrering på to aktiekurser samtidig
+filtered_stocks = stock_prices[
+    (stock_prices["MSFT"] > 50) &
+    (stock_prices["AAPL"] > 100)
+]
+
+print(filtered_stocks.head())
+# %%
+#Sortering på aktiekurs, faldende, for to aktier
+stock_prices_sorted = stock_prices.sort_values(
+    by=["MSFT", "AAPL"],
+    ascending=[False, False]
+)
+ #Sorteres først på AAPL, hvis to eller flere værdier for MSFT er ens.
+print(stock_prices_sorted.head())
+
+# %%
+#Sortér efter den største daglige kursændring
+aktier = stock_prices.columns.drop("Date")
+daglige_aendringer = stock_prices[aktier].pct_change() * 100
+
+daglige_aendringer.columns = [
+    f"{aktie}_pct_change" for aktie in aktier
+]
+
+stock_prices_and_returns = pd.concat(
+    [stock_prices, daglige_aendringer],
+    axis=1
+)
+
+print(stock_prices_and_returns.head())
+# %%
+#Groupby() efter år, og find gennemsnitligt afkast per år
+stock_prices_and_returns["Date"] = pd.to_datetime(
+    stock_prices_and_returns["Date"]
+)
+
+stock_prices_and_returns["År"] = (
+    stock_prices_and_returns["Date"].dt.year
+)
+
+afkast_kolonner = stock_prices_and_returns.columns[
+    stock_prices_and_returns.columns.str.endswith("_pct_change")
+]
+
+årligt_gennemsnitsafkast = (
+    stock_prices_and_returns
+    .groupby("År")[afkast_kolonner]
+    .mean()
+)
+
+print(årligt_gennemsnitsafkast)
+
+# %%
+#Kombinér to dataframes med merge()
+#merge() kombinerer data ved at matche en fælles nøgle, fx Aktie, Date eller begge dele.
+#concat() Sætte DataFrames sammen ved siden af hinanden eller oven på hinanden,
+# typisk når rækker eller kolonner allerede passer sammen.
+
+    #Opretter en ekstra dataframe med aktie info:
+aktie_info = pd.DataFrame({
+    "Aktie": ["MSFT", "IBM", "SBUX", "AAPL", "GSPC"],
+    "Virksomhed": [
+        "Microsoft",
+        "IBM",
+        "Starbucks",
+        "Apple",
+        "S&P 500"
+    ],
+    "Type": [
+        "Tech",
+        "Tech",
+        "Forbrug",
+        "Tech",
+        "Indeks"
+    ]
+})
+#%%
+    #Gør aktiekurserne klar til merge() ved at omdanne til langt format
+stock_prices_long = stock_prices.melt(
+    id_vars="Date",
+    var_name="Aktie",
+    value_name="Kurs"
+)
+#%%
+    #Kombinér de to DataFrames med merge()
+stock_prices_merged = stock_prices_long.merge(
+    aktie_info,
+    on="Aktie",
+    how="left"
+)
+
+print(stock_prices_merged.head())
+
+# %%
+#Pivotér daglige aktieafkast ud fra daglige_aendringer (fra bred til lang til bred):
+afkast_long = daglige_aendringer.copy()
+
+afkast_long["Date"] = stock_prices["Date"].values
+
+afkast_long = afkast_long.melt(
+    id_vars="Date",
+    var_name="Aktie",
+    value_name="Afkast_pct"
+)
+
+afkast_wide = afkast_long.pivot(
+    index="Date",
+    columns="Aktie",
+    values="Afkast_pct"
+)
+
+print(afkast_wide.head()) #Rækkefølgen af aktier ændres!
+
+# %%
+#Gør datoen til indeks
+stock_prices["Date"] = pd.to_datetime(stock_prices["Date"])
+
+stock_prices = stock_prices.set_index("Date")
+#%%
+print(stock_prices.head())
+
+# %%
+# NumPy-vektorisering, hvor hensigtsmæssigt (arrays)
+    #Med for-loop bestemmes daglige kursændringer således:
+msft = stock_prices["MSFT"]
+
+kursaendringer = []
+
+for i in range(1, len(msft)):
+    aendring = msft.iloc[i] - msft.iloc[i - 1]
+    kursaendringer.append(aendring)
+#%%
+    #Daglige kursændringer kan lettere bestemmes således med NumPy:
+kursaendringer = stock_prices.drop(columns=["År"]).diff()
+
+kursaendringer.head()
+# %%
+# Daglige afkast kan let bestemmes som:
+daglige_afkast = stock_prices.pct_change() * 100
+
+daglige_afkast.describe()
+# %%
+#Gennemsnitlige daglige afkast kan bestemmes ud fra årlige afkast
+# Første og sidste observerede kurs i hvert kalenderår
+første_kurs = stock_prices.groupby(
+    stock_prices.index.year
+).first()
+
+sidste_kurs = stock_prices.groupby(
+    stock_prices.index.year
+).last()
+
+# Samlet kalenderårsafkast
+årligt_afkast = sidste_kurs / første_kurs - 1
+
+# Antal daglige perioder mellem årets første og sidste kurs
+antal_dage = stock_prices.groupby(
+    stock_prices.index.year
+).count() - 1
+
+# Geometrisk gennemsnitligt dagligt afkast
+gennemsnitligt_dagligt_afkast = (
+    (1 + årligt_afkast) ** (1 / antal_dage) - 1
+)
+
+print((gennemsnitligt_dagligt_afkast.drop(columns=["År"]) * 100).round(4))
+
+# %%
+## Test og Fejlfinding
+#Laver en funktion, der beregner afkast:
+
+import pandas as pd
+
+
+def beregn_afkast(priser):
+    if not isinstance(priser, pd.Series):
+        raise TypeError("Priser skal være en pandas Series.")
+
+    if priser.empty:
+        raise ValueError("Prisserien må ikke være tom.")
+
+    if not pd.api.types.is_numeric_dtype(priser):
+        raise TypeError("Priser skal være numeriske.")
+
+    return priser.pct_change(fill_method=None)
+
+# %%

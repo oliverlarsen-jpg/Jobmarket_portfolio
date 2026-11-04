@@ -51,7 +51,7 @@ plt.ylabel("Overlevende (%)")
 plt.ylim(0, 100)
 
 plt.tight_layout()
-plt.savefig("survival_rate_by_class.png", dpi=300)
+plt.savefig("outputs/01_survival_rate_by_class.png", dpi=300)
 plt.show()
 
 # %%
