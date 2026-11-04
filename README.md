@@ -153,7 +153,7 @@ Listen er vejledende og bør tilpasses de faktiske filnavne i projektet.
 - **Git** – versionsstyring, herunder feature-branch
 
 ## 7. Status og næste skridt
-Projektet fokuserer på praktisk dataanalyse og statistisk modellering.
+Projektet fokuserer på praktisk dataanalyse, statistisk modellering og datadrevet problemløsning med anvendelse inden for finans.
 
 Projektet er under udvikling. Nye projekter og analyser tilføjes løbende med fokus på at opbygge praktiske kompetencer inden for dataanalyse, statistik, finans og risikomodellering.
 

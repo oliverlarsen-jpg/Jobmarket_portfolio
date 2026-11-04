@@ -1,0 +1,98 @@
+## 04.1 - Git i praksis ##
+
+#•	Øv status, add, commit, log, diff, restore og branch.
+# I dette trin skal følgende 7 kommandoer øves:
+git status	#Se projektets aktuelle tilstand
+git add	    #Vælge ændringer til næste commit
+git add -A  # Tilføj alle ændringer i projektmappen på én gang
+git commit	#Gemme ændringer i historikken
+git commit -m "$$$" Gemmer commit med beskrivende tekst "$$$"
+git log	    #Se tidligere commits
+git diff    #Se præcist, hvad der er ændret
+git restore	#Kassere ændringer i arbejdsområdet
+git branch	#Se eller oprette branches
+
+
+#•	Lav en feature-branch, foretag ændringer og merge den.
+1. Kontrollér, at dit projekt er klar:
+git status
+
+2. Opret en feature-branch, som er er en separat gren af din Git-historik,
+hvor du kan arbejde på en ændring uden at ændre direkte på main:
+git switch -c feature/readme-update
+Denne gør to ting samtidig, som er:
+- Opretter en ny branch med navnet feature/readme-update.
+- Skifter automatisk over til den nye branch.
+
+Kontrollerer, at jeg er på den nye branch:
+git branch      (* angiver den aktive branch)
+
+3. Foretag en ændring
+Nu skal du lave en lille, konkret ændring på din feature-branch.
+- Åbn README.md i VS Code.
+- Tilføj eksempelvis "herunder feature-branch" efter "Git"
+
+4. Commit ændringen på feature-branchen:
+git add README.md
+git commit -m "Refine project documentation"
+
+5. Merge feature-branchen til main:
+git switch main
+git merge feature/readme-update
+
+6. Ryd op og kontrollér til sidst
+git branch -d feature/readme-update (sletter branchen "feature/readme-update")
+
+git status
+git log --oneline --graph
+
+#•	Lav og løs en simpel mergekonflikt.
+Stå i main branchen - ellers skift med git switch main
+
+1. Opret to branches, der begge ændrer den samme tekst i README-filen.
+Opret først første branch:
+git switch -c feature/readme-version-a
+Tilføj under punkt 7: "Projektet fokuserer på praktisk dataanalyse og statistisk modellering."
+Gem filen, og commit ændringen:
+git add README.md
+git commit -m "Update project status description A"
+
+Skift tilbage til main og opret nu den anden branch:
+git switch main
+git switch -c feature/readme-version-b
+
+2. Lav en anden ændring på præcist samme sted i README.md
+Tilføj nu i stedet "Projektet fokuserer på finansiel analyse og datadrevet problemløsning."
+Gem filen, og commit ændringen:
+git add README.md
+git commit -m "Update project status description B"
+Skift tilbage til main
+git switch main
+
+3. Fremprovokér mergekonflikten
+Merge nu den første branch (uden problemer):
+git merge feature/readme-version-a
+
+Forsøg derefter at merge den anden branch (mergekonflikt):
+git merge feature/readme-version-b
+
+4. Forstå konfliktmarkeringerne
+Output fortæller:
+<<<<<<< HEAD	Din nuværende branch (main)
+=======	        Adskiller de to versioner
+>>>>>>> feature/readme-version-b	Den branch, du forsøger at merge
+
+Git kan ikke selv afgøre, hvilken formulering du ønsker at beholde.
+
+5. Løs konflikten manuelt
+Erstat hele konfliktområdet med denne tekst og fjern konfliktmarkeringerne:
+Projektet fokuserer på praktisk dataanalyse, statistisk modellering
+og datadrevet problemløsning med anvendelse inden for finans.
+
+gem README.md
+
+6. Afslut mergekonflikten
+git add README.md
+git status
+Afslut med:
+git commit -m "Merge feature branches and resolve README conflict"
