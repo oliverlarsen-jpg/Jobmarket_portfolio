@@ -153,6 +153,7 @@ Listen er vejledende og bør tilpasses de faktiske filnavne i projektet.
 - **Git** – versionsstyring, herunder feature-branch
 
 ## 7. Status og næste skridt
+Projektet fokuserer på finansiel analyse og datadrevet problemløsning.
 
 Projektet er under udvikling. Nye projekter og analyser tilføjes løbende med fokus på at opbygge praktiske kompetencer inden for dataanalyse, statistik, finans og risikomodellering.
 
