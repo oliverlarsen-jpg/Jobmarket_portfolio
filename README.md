@@ -150,7 +150,7 @@ Listen er vejledende og bør tilpasses de faktiske filnavne i projektet.
 - **NumPy** – numeriske beregninger.
 - **Matplotlib** – visualisering af data.
 - **pytest** – automatiserede tests.
-- **Git** – versionsstyring.
+- **Git** – versionsstyring, herunder feature-branch
 
 ## 7. Status og næste skridt
 
