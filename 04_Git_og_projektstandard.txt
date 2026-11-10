@@ -96,3 +96,30 @@ git add README.md
 git status
 Afslut med:
 git commit -m "Merge feature branches and resolve README conflict"
+
+7. Ryd op efter øvelsen ved at slette de to branches
+git branch -d feature/readme-version-a
+git branch -d feature/readme-version-b
+
+kontroller med:
+git log --oneline --graph --all
+
+
+## 04.2 - GitHub-profil
+Når projektet først er på GitHub, skal du fremover ikke gentage hele opsætningen.
+
+Din normale arbejdsgang bliver:
+1. Arbejd med dine filer
+   
+   Redigér Python-scripts, datasæt eller README i VS Code.
+2. Kontrollér ændringer:
+   git status
+   git diff
+3. Tilføj ændringer:
+   git add -A
+4. Opret commit:
+   git commit -m "Describe your changes"
+5. Upload til GitHub:
+   git push
+
+Det er denne arbejdsgang, du kommer til at bruge igen og igen.
